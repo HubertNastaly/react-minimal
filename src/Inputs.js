@@ -1,4 +1,5 @@
 import React from 'react'
+import { get } from 'https';
 
 class Inputs extends React.Component
 {
@@ -8,13 +9,13 @@ class Inputs extends React.Component
         this.aChanged = this.aChanged.bind(this);
         this.bChanged = this.bChanged.bind(this);
         this.generateArray = this.generateArray.bind(this);
+        this.counter = 1;
       }
     aChanged(e)
     {
         const a = e.target.value;
         console.log('Value changed a: ' + a);
         this.setState({a: a});
-            
     }
     bChanged(e)
     {
@@ -26,10 +27,16 @@ class Inputs extends React.Component
     {
         if(this.state.a <= 0 || this.state.a > this.state.b)
         {
-            this.setState({arr: []});
+            console.time('Render ' + this.counter);
+            this.setState({arr: []}, () => {
+                console.timeEnd('Render ' + this.counter++);
+            });
             return;
         }
-        this.setState({arr: new Array(this.state.b-this.state.a+1).fill(0).map((val,idx) => val = parseInt(this.state.a) + idx)});
+        console.time('Render ' + this.counter);
+        this.setState({arr: new Array(this.state.b-this.state.a+1).fill(0).map((val,idx) => val = parseInt(this.state.a) + idx)}, () => {
+            console.timeEnd('Render ' + this.counter++);
+        });
     }
     render() {
         return (
@@ -39,7 +46,7 @@ class Inputs extends React.Component
                 <br></br>
                 <button id="process" onClick={this.generateArray}>Process</button>
                 <br></br>
-                <span>{this.state.arr.toString()}</span>
+                <p>{this.state.arr.toString().split(',').join(', ')}</p>
             </div>
         );
     }
