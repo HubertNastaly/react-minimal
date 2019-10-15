@@ -1,14 +1,5 @@
 import React from 'react'
 
-// const Inputs = () =>
-// (
-//     <div id="inputs">
-//         <input id="a" width="50px" type="number"></input>
-//         <input id="b" width="50px" type="number"></input>
-//     </div>
-//     <article id="array"></article>
-// )
-
 class Inputs extends React.Component
 {
     constructor(props) {
@@ -35,6 +26,7 @@ class Inputs extends React.Component
     {
         if(this.state.a <= 0 || this.state.a > this.state.b)
         {
+            this.setState({arr: []});
             return;
         }
         this.setState({arr: new Array(this.state.b-this.state.a+1).fill(0).map((val,idx) => val = parseInt(this.state.a) + idx)});
