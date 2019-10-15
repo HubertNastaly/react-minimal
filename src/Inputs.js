@@ -6,9 +6,11 @@ class Inputs extends React.Component
     constructor(props) {
         super(props);
         this.state = {a: 0, b: 0, arr:[]};
+        this.sqrtArr = [];
         this.aChanged = this.aChanged.bind(this);
         this.bChanged = this.bChanged.bind(this);
         this.generateArray = this.generateArray.bind(this);
+        this.processArray = this.processArray.bind(this);
         this.counter = 1;
       }
     aChanged(e)
@@ -25,7 +27,8 @@ class Inputs extends React.Component
     }
     generateArray(e)
     {
-        if(this.state.a <= 0 || this.state.a > this.state.b)
+        const [a,b] = [parseInt(this.state.a),parseInt(this.state.b)];
+        if(a <= 0 || a > b)
         {
             console.time('Render ' + this.counter);
             this.setState({arr: []}, () => {
@@ -34,9 +37,45 @@ class Inputs extends React.Component
             return;
         }
         console.time('Render ' + this.counter);
-        this.setState({arr: new Array(this.state.b-this.state.a+1).fill(0).map((val,idx) => val = parseInt(this.state.a) + idx)}, () => {
+        this.setState({arr: new Array(b-a+1).fill(0).map((val,idx) => val = a + idx)}, () => {
             console.timeEnd('Render ' + this.counter++);
         });
+    }
+    processArray()
+    {
+        if(this.state.arr.length == 0)
+        {
+            return;
+        }
+        if(this.sqrtArr.length == 0)
+        {
+            console.log('sqrtArr does not exist');
+            this.sqrtArr = new Array(this.state.arr.length + this.state.arr[0]).fill(0).map((val,idx) => val = Math.sqrt(idx));
+        }
+        else
+        {
+            console.log('sqrtArr exists');
+            if(this.state.arr.length + this.state.arr[0] > this.sqrtArr.length)
+            {
+                const extraLen = this.state.arr.length + this.state.arr[0] - this.sqrtArr.length;
+                const len = this.sqrtArr.length;
+                console.log(`sqrtArr is too short, extraLen: ${extraLen}`);
+                this.sqrtArr = this.sqrtArr.concat(new Array(extraLen).fill(0).map((val,idx) => val = Math.sqrt(len + idx)));
+            }
+        }
+        const [a,b] = [parseInt(this.state.a),parseInt(this.state.b)];
+        console.log(this.sqrtArr);
+        console.log(this.sqrtArr.slice(a,b+1));
+        console.log([a,b]);
+        console.time('Process array');
+        this.setState({arr: this.sqrtArr.slice(a,b+1)}, () => {
+            console.timeEnd('Process array');
+        });
+        // console.time('Process array');
+        // this.setState({arr: this.state.arr.map((val) => Math.sqrt(val))}, () => {
+        //     console.timeEnd('Process array');
+        // });
+        
     }
     render() {
         return (
@@ -46,7 +85,10 @@ class Inputs extends React.Component
                 <br></br>
                 <button id="process" onClick={this.generateArray}>Process</button>
                 <br></br>
+                <button id="processArray" onClick={this.processArray}>Process array</button>
+                <br></br>
                 <p>{this.state.arr.toString().split(',').join(', ')}</p>
+                
             </div>
         );
     }
