@@ -5,8 +5,7 @@ class Inputs extends React.Component
 {
     constructor(props) {
         super(props);
-        this.state = {a: 0, b: 0, arr:[]};
-        this.sqrtArr = [];
+        this.state = {a: 0, b: 0, arr:[], sqrtArr: []};
         this.aChanged = this.aChanged.bind(this);
         this.bChanged = this.bChanged.bind(this);
         this.generateArray = this.generateArray.bind(this);
@@ -15,19 +14,22 @@ class Inputs extends React.Component
       }
     aChanged(e)
     {
+        this.setState({sqrtArr: []});
         const a = e.target.value;
         console.log('Value changed a: ' + a);
         this.setState({a: a});
+        this.generateArray(a,parseInt(this.state.b));
     }
     bChanged(e)
     {
+        this.setState({sqrtArr: []});
         const b = e.target.value;
         console.log('Value changed b: ' + b);
         this.setState({b: b});
+        this.generateArray(parseInt(this.state.a),b);
     }
-    generateArray(e)
+    generateArray(a,b)
     {
-        const [a,b] = [parseInt(this.state.a),parseInt(this.state.b)];
         if(a <= 0 || a > b)
         {
             console.time('Render ' + this.counter);
@@ -45,37 +47,23 @@ class Inputs extends React.Component
     {
         if(this.state.arr.length == 0)
         {
+            this.setState({sqrtArr: []});
             return;
         }
-        if(this.sqrtArr.length == 0)
+        if(this.state.sqrtArr.length == 0)
         {
-            console.log('sqrtArr does not exist');
-            this.sqrtArr = new Array(this.state.arr.length + this.state.arr[0]).fill(0).map((val,idx) => val = Math.sqrt(idx));
+            console.time('Render ' + this.counter);
+            this.setState({sqrtArr: this.state.arr.map((val) => Math.sqrt(val))}, () => {
+                console.timeEnd('Render ' + this.counter++);
+            });
         }
         else
         {
-            console.log('sqrtArr exists');
-            if(this.state.arr.length + this.state.arr[0] > this.sqrtArr.length)
-            {
-                const extraLen = this.state.arr.length + this.state.arr[0] - this.sqrtArr.length;
-                const len = this.sqrtArr.length;
-                console.log(`sqrtArr is too short, extraLen: ${extraLen}`);
-                this.sqrtArr = this.sqrtArr.concat(new Array(extraLen).fill(0).map((val,idx) => val = Math.sqrt(len + idx)));
-            }
+            console.time('Render ' + this.counter);
+            this.setState({sqrtArr: this.state.sqrtArr.map((val) => Math.sqrt(val))}, () => {
+                console.timeEnd('Render ' + this.counter++);
+            });
         }
-        const [a,b] = [parseInt(this.state.a),parseInt(this.state.b)];
-        console.log(this.sqrtArr);
-        console.log(this.sqrtArr.slice(a,b+1));
-        console.log([a,b]);
-        console.time('Process array');
-        this.setState({arr: this.sqrtArr.slice(a,b+1)}, () => {
-            console.timeEnd('Process array');
-        });
-        // console.time('Process array');
-        // this.setState({arr: this.state.arr.map((val) => Math.sqrt(val))}, () => {
-        //     console.timeEnd('Process array');
-        // });
-        
     }
     render() {
         return (
@@ -83,12 +71,11 @@ class Inputs extends React.Component
                 <input id="a" width="50px" type="number" onChange={this.aChanged}></input>
                 <input id="b" width="50px" type="number" onChange={this.bChanged}></input>
                 <br></br>
-                <button id="process" onClick={this.generateArray}>Process</button>
-                <br></br>
+                <p>{this.state.arr.toString().split(',').join(', ')}</p>
                 <button id="processArray" onClick={this.processArray}>Process array</button>
                 <br></br>
-                <p>{this.state.arr.toString().split(',').join(', ')}</p>
-                
+                <p>{this.state.sqrtArr.toString().split(',').join('; ')}</p>
+                {/* <p>{this.state.arr.map((val) => Math.sqrt(val)).toString().split(',').join('; ')}</p> */}
             </div>
         );
     }
